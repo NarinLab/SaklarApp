@@ -1,0 +1,101 @@
+body {
+    background-color: #2a2a2a;
+    text-shadow: black -1px -2px 0px;
+    color: #c5c5c5;
+}
+.small-info {
+    font-size: 9px;
+}
+.top-log {
+    text-align: center;
+    margin: 10px 0px;
+}
+.footet-cr {
+    text-align: center;
+    position: relative;
+    bottom: 10px;
+    width: 100%;
+    margin-top: 50px;
+}
+.device-list .row {
+    padding: 20px 0px;
+    border-top: 1px solid rgba(113, 113, 113, 0.74);
+    border-bottom: 1px solid #000000;
+    border-left: none;
+    border-right: none;
+}
+input#ip {
+    background-color: rgba(31, 3, 117, 0.27);
+    border: 1px solid #0b0133;
+    color: #FFF;
+}
+div#header {
+    background: #4c4c4c; /* Old browsers */
+background: -moz-linear-gradient(-45deg, #4c4c4c 0%, #595959 12%, #666666 25%, #474747 39%, #2c2c2c 50%, #000000 51%, #111111 60%, #2b2b2b 76%, #1c1c1c 91%, #131313 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(-45deg, #4c4c4c 0%,#595959 12%,#666666 25%,#474747 39%,#2c2c2c 50%,#000000 51%,#111111 60%,#2b2b2b 76%,#1c1c1c 91%,#131313 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(135deg, #4c4c4c 0%,#595959 12%,#666666 25%,#474747 39%,#2c2c2c 50%,#000000 51%,#111111 60%,#2b2b2b 76%,#1c1c1c 91%,#131313 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    border-radius: 10px;
+    text-shadow: none;
+    color: #000;
+    border: 1px solid rgba(255, 255, 255, 0.58);
+    border-bottom: none;
+    margin-top: 80px;
+}
+.device-list h5 {
+    margin: 0;
+    margin-bottom: 10px;
+}
+.devices-stat {
+text-align: center;
+    font-size: 20px;
+    position: relative;
+    top: 35px;
+    color: rgba(255, 255, 255, 0.67);
+    text-shadow: 1px 1px 1px #000;
+}
+div#top-menu {
+    width: 100%;
+}
+button.on {
+   border-radius: 50%;
+    background-color: #3e3d3d;
+    background-image: linear-gradient(rgba(0, 0, 0, 0) 50%, #2e2e2e 50%);
+    box-shadow: 0px 0px 10px #5600ff;
+    min-width: 50px;
+    min-height: 50px;
+}
+button.on span{
+    text-shadow: rgba(255, 255, 255, 0.4) 0 0 35px, rgba(76, 190, 255, 0.95) 0 0 25px;
+    background: none;
+    color: #4cbeff;
+    text-decoration: none;
+}
+button.off {
+    border-radius: 50%;
+    background-color: #2d2d2d;
+    background-image: linear-gradient(rgba(0, 0, 0, 0) 50%, #2e2e2e 50%);
+        min-width: 50px;
+    min-height: 50px;
+}
+button.off span{
+  text-shadow: rgba(255, 255, 255, 0.4) 0 0 35px, rgba(76, 190, 255, 0.95) 0 0 25px;
+    background: none;
+    color: #4cbeff;
+    text-decoration: none;
+}
+.top-log {
+    text-align: center;
+    width: 100%;
+    position: absolute;
+    left: 0px;
+    background-color: black;
+    top: 0px;
+    padding: 10px 0px;
+    font-family: 'Courier New';
+    font-size: 12px;
+    color: #FFF;
+    border-bottom: 1px solid #5a5757;
+}
+.margin-center{
+  margin: 0 auto;
+}
