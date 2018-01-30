@@ -40,6 +40,11 @@ class Main extends React.Component{
     this.getDeviceList = this.getDeviceList.bind(this);
     this.scanDevice = this.scanDevice.bind(this);
     this.testIp = this.testIp.bind(this);
+    this.mock = this.mock.bind(this);
+    this.setLog = this.setLog.bind(this);
+  }
+  setLog(log){
+    this.setState({xhr_log: log});
   }
   testIp(IP){
     this.setState({xhr_log: 'Mencoba mengontak ' + IP});
@@ -47,8 +52,6 @@ class Main extends React.Component{
     function(response){
       IP_LIST.push(IP);
       this.setState({xhr_log: IP + ' ditambahkan ke daftar perangkat.'});
-      this.getDeviceList();
-      this.getDeviceList();
       this.setState({xhr_log: "Terdapat " + IP_LIST.length + " Node aktif dalam jaringan ini. Terakhir diuji: " + IP + " - " + "OK!"});
     }.bind(this), 
     function(xhr, status){
@@ -60,14 +63,14 @@ class Main extends React.Component{
     if(IP_RANGE.indexOf('-') > -1){
       var ip_range_array = IP_RANGE.split('-');
       var start = ip_range_array[0];
-      var end = ip_range_array[1];
+      var end = parseInt(ip_range_array[1]);
       if(end == NaN || end > 254 || end < 1 || start.split(".").length < 4){
         this.setState({xhr_log: end + ' ' + 'IP awal/akhir tidak valid!'});
       }
       else{
         var ip_prefix = start.split(".");
         var IP_LIST_TEMP = [];
-        for(var i = start.split(".")[3]; i <= end; i++){
+        for(var i = parseInt(start.split(".")[3]); i <= end; i++){
           var curr_ip = ip_prefix[0] + '.' + ip_prefix[1] + '.' + ip_prefix[2] + '.' + i;
           IP_LIST_TEMP.push(curr_ip);
         }
@@ -86,6 +89,14 @@ class Main extends React.Component{
       return false;
     }
   }
+  mock(IP, id){
+        var arrayvar = this.state.deviceList;
+        pakpos(IP, {cmd: 'get', value: '{"func": "devices_list", "id": '+id+'}'}, function(response){
+            response.usage = response.uptime/1000/60/60 * response.watt / 1000 * 1300;
+            arrayvar[response.ip + '-' + response.id] = response;
+            this.setState({ deviceList: arrayvar });
+        }.bind(this));
+  }
   getDeviceList(){
     var active = 0;
     var usage = 0;
@@ -93,13 +104,18 @@ class Main extends React.Component{
     IP_LIST.forEach(function(IP) {
       pakpos(IP, {cmd: 'get', value: '{"func": "index"}'}, function(response){
         devCount = parseInt(devCount) + parseInt(response);
-        for(var l = 1; l <= response; l++){
-          pakpos(IP, {cmd: 'get', value: '{"func": "devices_list", "id": '+l+'}'}, function(response){
-            var arrayvar = this.state.deviceList;
-            response.usage = response.uptime/1000/60/60 * response.watt / 1000 * 1300;
-            arrayvar[response.ip + '-' + response.id] = response;
-            this.setState({ deviceList: arrayvar });
-          }.bind(this));
+        for(var l = 1; l <= parseInt(response); l++){
+            
+                  (function(l) {
+                     setTimeout(function(){
+                        pakpos(IP, {cmd: 'get', value: '{"func": "devices_list", "id": '+l+'}'}, function(response){
+                            var arrayvar = this.x.state.deviceList;
+                            response.usage = response.uptime/1000/60/60 * response.watt / 1000 * 1300;
+                            arrayvar[response.ip + '-' + response.id] = response;
+                            this.x.setState({ deviceList: arrayvar });
+                        }.bind(this));
+                    }.bind({x:this, l: l}),180 * l);
+                  }).bind(this)(l)
         }
         this.setState({xhr_log: IP + ' <---> ' + 'OK!'});
         this.setState({devCount: devCount, devActive: active, devUsage: Math.round(usage)});
@@ -122,8 +138,8 @@ class Main extends React.Component{
       <div>
       <div className="top-log">{this.state.xhr_log}</div>
       <div className="container">
-        <Header scan={this.scanDevice} refresh={this.getDeviceList} devCount={this.state.devCount} devActive={this.state.devActive} devUsage={this.state.devUsage}/>
-        <Content deviceList={this.state.deviceList} refresh={this.getDeviceList}/>
+        <Header log={this.setLog} scan={this.scanDevice} refresh={this.getDeviceList} devCount={this.state.devCount} devActive={this.state.devActive} devUsage={this.state.devUsage}/>
+        <Content deviceList={this.state.deviceList} refresh={this.mock}/>
         <div className="footet-cr">&copy; 2017 <a href="https://tutorkeren.com">Narin Laboratory</a></div>
       </div>
       </div>
@@ -140,6 +156,20 @@ class Header extends React.Component{
     this.refresh = this.refresh.bind(this);
     this.scan = this.scan.bind(this);
     this.changeIp = this.changeIp.bind(this);
+    this.changeRange = this.changeRange.bind(this);
+  }
+  changeRange(){
+    if(IP_RANGE == '192.168.43.1-254'){
+      IP_RANGE = '172.20.10.2-14';
+      IP_LIST = ['172.20.10.2'];
+      this.props.log("IP Range diganti ke APPLE");
+    }
+    else{
+      IP_RANGE = '192.168.43.1-254';
+      IP_LIST = ['192.168.43.2'];
+      this.props.log("IP Range diganti ke ANDROID");
+    }
+    this.setState({ip: IP_RANGE});
   }
   refresh(){
     this.props.refresh();
@@ -165,7 +195,7 @@ class Header extends React.Component{
         </div>
         <div className="col-xs-4">
           <div className="logo">
-            <img src="img/narin_laboratory.png" alt="Narin Laboratory" className="img-responsive margin-center"/>
+            <img src="img/narin_laboratory.png" alt="Narin Laboratory" className="img-responsive margin-center" onClick={this.changeRange}/>
           </div>
         </div>
         <div className="col-xs-4">
@@ -214,6 +244,7 @@ class Card extends React.Component{
     super(props);
     this.btnHandleClick = this.btnHandleClick.bind(this);
     this.state = {
+        state: this.props.device.state
     }
   }
   getIcon(model){
@@ -226,12 +257,21 @@ class Card extends React.Component{
     else if(model == 'PIR'){
       return 'img/pir.jpg'
     }
+    else if(model == 'STARTER'){
+      return 'img/starter.jpg'
+    }
     else{
       return 'img/narin_laboratory.png';
     }
   }
   btnHandleClick(e){
-    pakpos(this.props.device.ip,{cmd: 'set', value: '{"func": "control_relay", "id": '+this.props.device.id+', "value": '+!this.props.device.state+'}'}, this.props.refresh);
+      this.setState({state: !this.state.state});
+      if(this.props.device.model == "STARTER"){
+          pakpos(this.props.device.ip,{cmd: 'set', value: '{"func": "control_relay", "id": '+this.props.device.id+', "value": 1}'}, this.props.refresh(this.props.device.ip, this.props.device.id));
+      }
+      else {
+          pakpos(this.props.device.ip,{cmd: 'set', value: '{"func": "control_relay", "id": '+this.props.device.id+', "value": '+!this.state.state+'}'}, this.props.refresh(this.props.device.ip, this.props.device.id));
+      }
   }
   getToggleClass(state){
       if(state == 0){
@@ -248,6 +288,13 @@ class Card extends React.Component{
       usage = Math.round(usage/1000) + 'K';
     }
     var uptime = Math.round(this.props.device.uptime/1000/60/60);
+    var button = '';
+    if(this.props.device.model == "STARTER"){
+        button = <button className={this.getToggleClass(this.state.state)} onClick={this.btnHandleClick}><span>S</span></button>
+    }
+    else {
+        button =  <button className={this.getToggleClass(this.state.state)} onClick={this.btnHandleClick}><span>{this.getToggleClass(this.state.state)}</span></button>;
+    }
     return(
       <div className="row">
         <div className="col-xs-3"><img src={this.getIcon(this.props.device.model)} alt={this.props.device.model} className="img-responsive"/></div>
@@ -261,7 +308,8 @@ class Card extends React.Component{
           </ul>
         </div>
         <div className="col-xs-3">
-          <button className={this.getToggleClass(this.props.device.state)} onClick={this.btnHandleClick}><span>{this.getToggleClass(this.props.device.state)}</span></button>
+         {button}
+          
         </div>
       </div>
     );
