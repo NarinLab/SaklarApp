@@ -591,12 +591,18 @@ void control_relay(int id, int value){
 //Fungsi untuk handler root (<a href="<a href="http://alamatip/">http://alamatip/</a>"><a href="http://alamatip/</a>">http://alamatip/</a></a>)
 void handle_root(){
   server.sendHeader("Access-Control-Allow-Origin", "*");
+  server.sendHeader("Access-Control-Max-Age", "10000");
+  server.sendHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS");
+  server.sendHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   server.send ( 200, "text/plain", "done" );
 }
   
 //Fungsi untuk handler POST /cgi (<a href="<a href="http://alamatip/cgi">http://alamatip/cgi</a>"><a href="http://alamatip/cgi</a>">http://alamatip/cgi</a></a> POST)
 void post_handle_cgi(){
   server.sendHeader("Access-Control-Allow-Origin", "*");
+  server.sendHeader("Access-Control-Max-Age", "10000");
+  server.sendHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS");
+  server.sendHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   if(server.args() > 0){
     /**for(int i = 0; i < server.args(); i++){
       Serial.print("Name: "); Serial.println(server.argName(i));
